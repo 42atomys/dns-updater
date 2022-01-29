@@ -1,0 +1,17 @@
+# Record to update define the rules to follow when found an ip change
+# Each record must contain:
+#     connector       => name of the connector to use
+#     domain          => which domain to update
+#     subDomain       => when your record is on a subdomain enter the name of
+#                        the sub domain here without domain extension
+#                        awesome.domain.tld must be `awesome`
+#     type            => type of the record. Actually must be A or AAAA only
+
+ipFetchInterval: 30s
+
+records:
+- connector: ovh
+  domain: example.space
+  subDomain: null
+  type: A
+  # interval: 1m

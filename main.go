@@ -1,12 +1,15 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+	"gitlab.com/atomys-universe/dns-updater/pkg/connectors/ovh"
+	"gitlab.com/atomys-universe/dns-updater/pkg/manager"
 )
 
 const WebhookURL = "https://canary.discord.com/api/webhooks/858713820200566804/NbsedN-G2yzbtM2vM9TyKXODYe4Jw0HVtC_AcZxPk9yTsqA5LhBsAxsBo23SYFJ0hKmK"
@@ -16,33 +19,59 @@ type Content struct {
 	Username string `json:"username"`
 }
 
+func init() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	if os.Getenv("DEBUG") == "true" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+
+	viper.SetConfigName("updater")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./config")
+	viper.AutomaticEnv()
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Panic().Err(err).Msg("Fatal error on reading config file")
+	}
+}
+
 func main() {
+	log.Info().Msg("DNS Updater starting...")
 
-	log.Println("Getting current IP")
-	resp, err := http.Get("https://ifconfig.co/ip")
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
+	manager.RegisterConnector(ovh.New())
+
+	if err := manager.ValidateConfiguration(); err != nil {
+		log.Fatal().Err(err).Msg("configuration is invalid")
 	}
 
-	c := Content{
-		Content:  fmt.Sprintf("IP: %s", string(bodyBytes)),
-		Username: "DNS Updater",
-	}
+	go manager.Run()
 
-	var jsonData []byte
-	jsonData, err = json.Marshal(c)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Info().Msg("DNS Updater is running")
+	c := make(chan os.Signal, 2)
+	<-c
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	log.Println("Post to Discord")
-	_, err = http.Post(WebhookURL, "application/json", bytes.NewReader(jsonData))
-	if err != nil {
-		log.Fatal(err)
-	}
+	// c := Content{
+	// 	Content:  fmt.Sprintf("IP: %s", string(bodyBytes)),
+	// 	Username: "DNS Updater",
+	// }
 
-	log.Println("Done !")
+	// var jsonData []byte
+	// jsonData, err = json.Marshal(c)
+	// if err != nil {
+	// 	log.Fatal().Err(err).Msg("Cannot Marshall")
+	// }
+
+	// log.Print("Post to Discord")
+	// _, err = http.Post(WebhookURL, "application/json", bytes.NewReader(jsonData))
+	// if err != nil {
+	// 	log.Fatal().Err(err).Msg("Cannot post")
+	// }
+
+	// log.Print("Done !")
 }
 
 //  https://discord.com/api/webhooks/858713820200566804/NbsedN-G2yzbtM2vM9TyKXODYe4Jw0HVtC_AcZxPk9yTsqA5LhBsAxsBo23SYFJ0hKmK
