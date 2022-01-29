@@ -10,7 +10,7 @@
 ipFetchInterval: 30s
 
 records:
-- connector: ovh
+- provider: ovh
   domain: example.space
   subDomain: null
   type: A
