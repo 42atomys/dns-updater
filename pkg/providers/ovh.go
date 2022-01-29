@@ -49,7 +49,7 @@ type record struct {
 
 func (c OVHProvider) UpdateDNS(domainName, subDomain string, fieldType manager.RecordType, ip net.IP) error {
 	var recordIds = []int{}
-	c.client.Get(fmt.Sprintf("/domain/zone/%s/record?fieldType=%s", domainName, fieldType), &recordIds)
+	c.client.Get(fmt.Sprintf("/domain/zone/%s/record?fieldType=%s&subDomain=%s", domainName, fieldType, subDomain), &recordIds)
 
 	for _, recordID := range recordIds {
 		var rec = record{}
