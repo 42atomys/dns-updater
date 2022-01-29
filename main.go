@@ -8,8 +8,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-	"gitlab.com/atomys-universe/dns-updater/pkg/connectors/ovh"
 	"gitlab.com/atomys-universe/dns-updater/pkg/manager"
+	"gitlab.com/atomys-universe/dns-updater/pkg/providers"
 )
 
 type Content struct {
@@ -39,7 +39,7 @@ func init() {
 func main() {
 	log.Info().Msg("DNS Updater starting...")
 
-	manager.RegisterConnector(ovh.New())
+	manager.RegisterProvider(providers.NewOvhProvider())
 
 	if err := manager.ValidateConfiguration(); err != nil {
 		log.Fatal().Err(err).Msg("configuration is invalid")

@@ -6,29 +6,27 @@ import (
 )
 
 type Worker struct {
-	Record    *Record
-	Connector Connector
+	Record   *Record
+	Provider Provider
 }
 
 // Store workers after spawnWorkers
 var workers = []*Worker{}
 
 /**
- * Initialize the workers pools witk all records and connectors
+ * Initialize the workers pools witk all records and providers
  */
 func initializeWorkers() {
 	log.Info().Msgf("Initializing workers for %d records", len(Config.Records))
 	for _, record := range Config.Records {
-		conn, err := Get(record.Connector)
+		conn, err := Get(record.Provider)
 		if err != nil {
-			panic("can't finish here. Connector is validate before")
+			panic("can't finish here. Provider is validate before")
 		}
 
-		log.Debug().Msgf("Initialize %s connector", conn.Name())
-		conn.Initialize()
 		var worker = &Worker{
-			Record:    record,
-			Connector: conn,
+			Record:   record,
+			Provider: conn,
 		}
 		workers = append(workers, worker)
 	}
@@ -59,19 +57,19 @@ func receiveIpChanges(state ip.IPChangeState) {
 		switch w.Record.Type {
 		case TypeA:
 			if state.IPV4Change {
-				log.Info().Str("domain", w.Record.Domain).Str("type", string(w.Record.Type)).Str("connector", w.Connector.Name()).Msg("Detect a new IPv4. Update DNS entry")
-				err = w.Connector.UpdateDNS(w.Record.Domain, w.Record.SubDomain, TypeA, ip.CurrentIPv4)
+				log.Info().Str("domain", w.Record.Domain).Str("type", string(w.Record.Type)).Str("provider", w.Provider.Name()).Msg("Detect a new IPv4. Update DNS entry")
+				err = w.Provider.UpdateDNS(w.Record.Domain, w.Record.SubDomain, TypeA, ip.CurrentIPv4)
 			}
 		case TypeAAAA:
 			if state.IPV6Change {
-				log.Info().Str("domain", w.Record.Domain).Str("type", string(w.Record.Type)).Str("connector", w.Connector.Name()).Msg("Detect a new IPv6. Update DNS entry")
-				err = w.Connector.UpdateDNS(w.Record.Domain, w.Record.SubDomain, TypeAAAA, ip.CurrentIPv6)
+				log.Info().Str("domain", w.Record.Domain).Str("type", string(w.Record.Type)).Str("provider", w.Provider.Name()).Msg("Detect a new IPv6. Update DNS entry")
+				err = w.Provider.UpdateDNS(w.Record.Domain, w.Record.SubDomain, TypeAAAA, ip.CurrentIPv6)
 			}
 		}
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot update DNS")
 			continue
 		}
-		log.Info().Str("domain", w.Record.Domain).Str("type", string(w.Record.Type)).Str("connector", w.Connector.Name()).Msg("DNS Entry updated successfully")
+		log.Info().Str("domain", w.Record.Domain).Str("type", string(w.Record.Type)).Str("provider", w.Provider.Name()).Msg("DNS Entry updated successfully")
 	}
 }

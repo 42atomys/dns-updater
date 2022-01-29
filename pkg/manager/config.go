@@ -14,7 +14,7 @@ type Configuration struct {
 }
 
 type Record struct {
-	Connector string
+	Provider  string
 	Domain    string
 	SubDomain string
 	Type      RecordType
@@ -44,8 +44,8 @@ func ValidateConfiguration() error {
 	}
 
 	for _, record := range Config.Records {
-		if !ConnectorIsRegistered(record.Connector) {
-			return ErrConnectorNotFound
+		if !ProviderIsRegistered(record.Provider) {
+			return ErrProviderNotFound
 		}
 
 		switch record.Type {
