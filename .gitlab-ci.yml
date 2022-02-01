@@ -1,0 +1,6 @@
+stages:
+  - build
+
+include:
+  - local: .gitlab/ci/_globals.gitlab-ci.yml
+  - local: .gitlab/ci/build.gitlab-ci.yml
