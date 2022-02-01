@@ -10,7 +10,9 @@ So I wrote this little program one afternoon in order to get rid of this manual 
 
 ## Usage
 
-To use it, its really simple (2 steps)
+To use it, its really simple (3 steps)
+
+You can use official Docker image : `atomys/dns-updater` (https://hub.docker.com/r/atomys/dns-updater) to test it or install it un your servers or Kubernetes Clusters. You can found an example to deploy this program on a Kubernetes cluster on the `examples/kubernetes` folder.
 
 ### Step 1 : Configure your updater.yaml
 In config folder, edit the updater.yaml
@@ -37,6 +39,13 @@ records:
 ```
 $ ./dns-updater
 ```
+
+### Step 3: Configure provider authentication data through env
+
+| Provider Name | Provider Site   | Environment Variables                                                                                                                                |
+| ------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ovh`         | https://ovh.com | `OVH_APPLICATION_KEY` Your OVH Application Key<br /> `OVH_APPLICATION_SECRET` Your OVH Apllication Secret<br /> `OVH_CONSUMER_KEY` Your Consumer Key |
+|               |                 |                                                                                                                                                      |
 
 ## How to add provider
 Want to use this program but your DNS provider is not integrated? You can participate by creating your provider and a merge request
