@@ -47,6 +47,12 @@ $ ./dns-updater
 | `ovh`         | https://ovh.com | `OVH_APPLICATION_KEY` Your OVH Application Key<br /> `OVH_APPLICATION_SECRET` Your OVH Apllication Secret<br /> `OVH_CONSUMER_KEY` Your Consumer Key |
 |               |                 |                                                                                                                                                      |
 
+# Contribution
+
+**This project is maintained on GitLab** : https://gitlab.com/Atomys/dns-updater
+
+MR must be on GitLab to be accepted. All pull requests on GitHub will rewrite on Gitlab if necessary.
+
 ## How to add provider
 Want to use this program but your DNS provider is not integrated? You can participate by creating your provider and a merge request
 
