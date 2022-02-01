@@ -1,0 +1,21 @@
+.base-build: &base-build
+  stage: build
+  image: docker:20.10
+  extends:
+    - .hub-docker-login
+    - .docker-in-docker
+  rules:
+    - if: $CI_COMMIT_TAG
+
+build-image:
+  <<: *base-build
+  script:
+    - |
+      docker build \
+        -t ${CI_PROJECT_NAME}-build \
+        --file ${CI_PROJECT_DIR}/build/Dockerfile \
+        ${CI_PROJECT_DIR}
+    - docker tag ${CI_PROJECT_NAME}-build atomys/${CI_PROJECT_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_PROJECT_NAME}-build atomys/${CI_PROJECT_NAME}:latest
+    - docker push atomys/${CI_PROJECT_NAME}:${CI_COMMIT_TAG}
+    - docker push atomys/${CI_PROJECT_NAME}:latest
