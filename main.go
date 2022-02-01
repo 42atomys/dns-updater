@@ -49,6 +49,11 @@ func main() {
 
 	log.Info().Msg("DNS Updater is running")
 	c := make(chan os.Signal, 2)
-	<-c
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	defer func() {
+		log.Info().Msg("Stoping DNS Updater...")
+	}()
+
+	<-c
 }
