@@ -42,10 +42,11 @@ $ ./dns-updater
 
 ### Step 3: Configure provider authentication data through env
 
-| Provider Name | Provider Site   | Environment Variables                                                                                                                                |
-| ------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ovh`         | https://ovh.com | `OVH_APPLICATION_KEY` Your OVH Application Key<br /> `OVH_APPLICATION_SECRET` Your OVH Apllication Secret<br /> `OVH_CONSUMER_KEY` Your Consumer Key |
-|               |                 |                                                                                                                                                      |
+| Provider Name | Provider Site         | Environment Variables                                                                                                                                |
+| ------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ovh`         | https://ovh.com       | `OVH_APPLICATION_KEY` Your OVH Application Key<br /> `OVH_APPLICATION_SECRET` Your OVH Apllication Secret<br /> `OVH_CONSUMER_KEY` Your Consumer Key |
+| `gandi`       | https://www.gandi.net | `GANDI_APPLICATION_KEY` Your Gandi API key (https://account.gandi.net)                                                                               |
+|               |                       |                                                                                                                                                      |
 
 # Contribution
 

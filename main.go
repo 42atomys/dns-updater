@@ -40,6 +40,7 @@ func main() {
 	log.Info().Msg("DNS Updater starting...")
 
 	manager.RegisterProvider(providers.NewOvhProvider())
+	manager.RegisterProvider(providers.NewGandiProvider())
 
 	if err := manager.ValidateConfiguration(); err != nil {
 		log.Fatal().Err(err).Msg("configuration is invalid")
