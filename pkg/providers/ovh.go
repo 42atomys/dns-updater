@@ -39,23 +39,27 @@ func (OVHProvider) Name() string {
  * record structure used to update DNS entry on OVH API
  */
 type record struct {
-	target    string
-	zone      string
-	id        int
-	fieldType string
-	ttl       int
-	subDomain string
+	Target    string `json:"target"`
+	Zone      string `json:"zone"`
+	ID        int    `json:"id"`
+	FieldType string `json:"fieldType"`
+	Ttl       int    `json:"ttl"`
+	SubDomain string `json:"subDomain"`
 }
 
 func (c OVHProvider) UpdateDNS(domainName, subDomain string, fieldType dns.RecordType, ip net.IP) error {
 	var recordIds = []int{}
-	c.client.Get(fmt.Sprintf("/domain/zone/%s/record?fieldType=%s&subDomain=%s", domainName, fieldType, subDomain), &recordIds)
+	if err := c.client.Get(fmt.Sprintf("/domain/zone/%s/record?fieldType=%s&subDomain=%s", domainName, fieldType, subDomain), &recordIds); err != nil {
+		return err
+	}
 
 	for _, recordID := range recordIds {
 		var rec = record{}
-		c.client.Get(fmt.Sprintf("/domain/zone/%s/record/%d", domainName, recordID), &rec)
+		if err := c.client.Get(fmt.Sprintf("/domain/zone/%s/record/%d", domainName, recordID), &rec); err != nil {
+			return err
+		}
 
-		rec.target = ip.String()
+		rec.Target = ip.String()
 		if err := c.client.Put(fmt.Sprintf("/domain/zone/%s/record/%d", domainName, recordID), &rec, nil); err != nil {
 			return err
 		}
