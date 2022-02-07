@@ -7,7 +7,7 @@ import (
 
 	"github.com/ovh/go-ovh/ovh"
 	"github.com/rs/zerolog/log"
-	"gitlab.com/atomys-universe/dns-updater/pkg/manager"
+	"gitlab.com/atomys-universe/dns-updater/internal/pkg/dns"
 )
 
 type OVHProvider struct {
@@ -47,7 +47,7 @@ type record struct {
 	subDomain string
 }
 
-func (c OVHProvider) UpdateDNS(domainName, subDomain string, fieldType manager.RecordType, ip net.IP) error {
+func (c OVHProvider) UpdateDNS(domainName, subDomain string, fieldType dns.RecordType, ip net.IP) error {
 	var recordIds = []int{}
 	c.client.Get(fmt.Sprintf("/domain/zone/%s/record?fieldType=%s&subDomain=%s", domainName, fieldType, subDomain), &recordIds)
 

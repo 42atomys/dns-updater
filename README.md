@@ -22,7 +22,7 @@ In config folder, edit the updater.yaml
 ipFetchInterval: 30s
 
 # Records entries define the rules to follow when found an ip change
-records:
+entries:
 - #  name of the provider to use. Must be registered
   provider: ovh
   # domain to update
@@ -54,10 +54,7 @@ $ ./dns-updater
 
 MR must be on GitLab to be accepted. All pull requests on GitHub will rewrite on Gitlab if necessary.
 
-## How to add provider
-Want to use this program but your DNS provider is not integrated? You can participate by creating your provider and a merge request
-
-To add a new provider go to `pkg/providers` package and create a new file named by the name of DNS provider.
+## How to add provider 
 
 A provider must be have two function
 ```go
@@ -74,14 +71,78 @@ type Provider interface {
 	Name() string
 	// Method called when an IP changes is detected and used to update
 	// DNS Entry on Provider
-	UpdateDNS(domainName, subDomain string, fieldType RecordType, ip net.IP) error
+	UpdateDNS(domainName, subDomain string, fieldType dns.RecordType, ip net.IP) error
 }
 ```
 
-After that, Register the new Provider on `main.go` file on the `Registration Section`
+### Add a provider (built-in method)
+Want to use this program but your DNS provider is not integrated? You can participate by creating your provider and a merge request
+
+To add a new provider go to `pkg/providers` package and create a new file named by the name of DNS provider.
+
+After that, Register the new Provider on `pkg/manager/providers.go` file on the `Registration Section`
+and add your new built-in provider in the switch case
 ```go
-manager.RegisterProvider(providers.NewAwesomeProvider())
+	case "awesome":
+		record.Provider = providers.NewAwesomeProvider()
 ```
+
+### Add a provider (runtime method)
+In some specific case, like custom dns server or custom dns service, private internal dns or somethings like that, 
+you can't add this provider to the main repository. 
+
+In this specific case, you can add a custom provider to your app and use the manager.
+
+This is an example of custom dns-updater 
+```go
+package main
+
+import (
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/rs/zerolog/log"
+	"gitlab.com/atomys-universe/dns-updater/internal/pkg/dns"
+	"gitlab.com/atomys-universe/dns-updater/pkg/manager"
+)
+
+type NinjaProvider struct{}
+
+func (p NinjaProvider) Name() string {
+	return "ninja"
+}
+
+func (p NinjaProvider) UpdateDNS(domainName, subDomain string, fieldType dns.RecordType, ip net.IP) error {
+	// Do update stuff
+	return nil
+}
+
+func main() {
+	// Register your private Custom Provider before validate
+	// the configuration
+	manager.RegisterCustomProvider(NinjaProvider{})
+	// Validate the configuration
+	if err := manager.ValidateConfiguration(); err != nil {
+		log.Fatal().Err(err).Msg("configuration is invalid")
+	}
+	// Start the manager
+	go manager.Run()
+	// Some log
+	log.Info().Msg("DNS Updater is running")
+	// Ctrl+C catch
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	defer func() {
+		log.Info().Msg("Stoping DNS Updater...")
+	}()
+
+	<-c
+}
+```
+You can now use `ninja` as provider in your configuration file ! 🎉
 
 All contributions are welcome :)
 

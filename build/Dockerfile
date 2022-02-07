@@ -2,7 +2,7 @@ FROM golang:1.17-alpine AS build
 
 WORKDIR /build
 COPY . /build
-RUN GOARCH=amd64 GOOS=linux go build -o dns-updater
+RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o dns-updater
 
 FROM alpine
 
