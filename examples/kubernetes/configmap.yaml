@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dns-updater-config
+data:
+  updater.yaml: |
+    # Interval at which the program will check if your IP has changed
+    ipFetchInterval: 30s
+
+    # Records entries define the rules to follow when found an ip change
+    records:
+    - #  name of the provider to use. Must be registered
+      provider: ovh
+      # domain to update
+      domain: example.space
+      # when your record is on a subdomain enter the name of
+      # the sub domain here without domain extension
+      # `awesome.example.space` must be `awesome`
+      subDomain: null
+      # Type of the record. Actually must be A or AAAA only
+      type: A

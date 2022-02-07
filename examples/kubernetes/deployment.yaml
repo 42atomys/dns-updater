@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-updater
+  labels:
+    app.kubernetes.io/name: dns-updater
+    app.kubernetes.io/version: '0.3.3'
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dns-updater
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dns-updater
+      spec:
+      containers:
+      - name: dns-updater
+        image: atomys/dns-updater:0.3.3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GANDI_APPLICATION_KEY
+          valueFrom:
+            secretKeyRef:
+              key: GANDI_APPLICATION_KEY
+              name: dns-updater-credentials
+        resources:
+          requests:
+            memory: "10Mi"
+            cpu: "10m"
+          limits:
+            memory: "15Mi"
+            cpu: "20m"
+        volumeMounts:
+        - mountPath: /config/updater.yaml
+          name: configuration
+          subPath: updater.yaml
+      volumes:
+      - name: configuration
+        configMap:
+          name: dns-updater-config
