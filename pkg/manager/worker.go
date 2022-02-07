@@ -82,7 +82,6 @@ func receiveIpChanges(state ip.IPChangeState) {
 			log.Error().Err(err).Msg("Cannot update DNS")
 			continue
 		}
-
-		l.Msg("DNS Entry updated successfully")
 	}
+	log.Info().Msg("DNS Entries updated successfully")
 }
