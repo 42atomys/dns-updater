@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -47,5 +48,6 @@ func fetch(url string) net.IP {
 		log.Error().Err(err).Msg("cannot fetch current IP")
 	}
 
-	return net.ParseIP(string(bodyBytes))
+	s := strings.Trim(string(bodyBytes), " \n")
+	return net.ParseIP(s)
 }
