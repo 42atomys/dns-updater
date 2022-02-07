@@ -52,25 +52,37 @@ func Run() {
  * makes the decision to update or not the DNS if the currentIP change.
  */
 func receiveIpChanges(state ip.IPChangeState) {
+	var err error
+
 	log.Debug().Msgf("New Ip State arrived: %+v", state)
+	if !state.IPV4Change && !state.IPV6Change {
+		return
+	}
+
 	for _, w := range workers {
-		var err error
+		l := log.Info().
+			Str("domain", w.ConfigurationEntry.Domain).
+			Str("type", string(w.ConfigurationEntry.Type)).
+			Str("provider", w.Provider.Name())
+
 		switch w.ConfigurationEntry.Type {
 		case dns.TypeA:
 			if state.IPV4Change {
-				log.Info().Str("domain", w.ConfigurationEntry.Domain).Str("type", string(w.ConfigurationEntry.Type)).Str("provider", w.Provider.Name()).Msg("Detect a new IPv4. Update DNS entry")
+				l.IPAddr("ip", ip.CurrentIPv4).Msg("Detect a new IPv4. Update DNS entry")
 				err = w.Provider.UpdateDNS(w.ConfigurationEntry.Domain, w.ConfigurationEntry.SubDomain, dns.TypeA, ip.CurrentIPv4)
 			}
 		case dns.TypeAAAA:
 			if state.IPV6Change {
-				log.Info().Str("domain", w.ConfigurationEntry.Domain).Str("type", string(w.ConfigurationEntry.Type)).Str("provider", w.Provider.Name()).Msg("Detect a new IPv6. Update DNS entry")
+				l.IPAddr("ip", ip.CurrentIPv6).Msg("Detect a new IPv6. Update DNS entry")
 				err = w.Provider.UpdateDNS(w.ConfigurationEntry.Domain, w.ConfigurationEntry.SubDomain, dns.TypeAAAA, ip.CurrentIPv6)
 			}
 		}
+
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot update DNS")
 			continue
 		}
-		log.Info().Str("domain", w.ConfigurationEntry.Domain).Str("type", string(w.ConfigurationEntry.Type)).Str("provider", w.Provider.Name()).Msg("DNS Entry updated successfully")
+
+		l.Msg("DNS Entry updated successfully")
 	}
 }
