@@ -6,27 +6,21 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"gitlab.com/atomys-universe/dns-updater/internal/pkg/dns"
 )
 
 type Configuration struct {
-	IPFetchInterval time.Duration
-	Records         []*Record
+	IPFetchInterval      time.Duration
+	ConfigurationEntries []*ConfigurationEntry `mapstructure:"entries"`
 }
 
-type Record struct {
-	Provider  string
-	Domain    string
-	SubDomain string
-	Type      RecordType
-	Interval  time.Duration
+type ConfigurationEntry struct {
+	ProviderName string   `mapstructure:"provider"`
+	Provider     Provider `mapstructure:"-"`
+	Domain       string
+	SubDomain    string
+	Type         dns.RecordType
 }
-
-type RecordType string
-
-const (
-	TypeA    RecordType = "A"
-	TypeAAAA RecordType = "AAAA"
-)
 
 var (
 	Config               = &Configuration{}
@@ -43,18 +37,19 @@ func ValidateConfiguration() error {
 		return err
 	}
 
-	for _, record := range Config.Records {
-		if !ProviderIsRegistered(record.Provider) {
-			return ErrProviderNotFound
+	for _, record := range Config.ConfigurationEntries {
+		if err := registerProvidersFromConfiguration(record); err != nil {
+			return err
 		}
 
 		switch record.Type {
-		case TypeA, TypeAAAA:
+		case dns.TypeA, dns.TypeAAAA:
 		default:
 			log.Error().Err(ErrIncorrectType).Str("domain", record.Domain).Str("type", string(record.Type)).Msg("Invalid configuration")
 			return ErrIncorrectType
 		}
 	}
 
+	log.Debug().Msgf("Load %d configurations", len(Config.ConfigurationEntries))
 	return nil
 }

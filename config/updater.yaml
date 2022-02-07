@@ -2,7 +2,7 @@
 ipFetchInterval: 30s
 
 # Records entries define the rules to follow when found an ip change
-records:
+entries:
 - #  name of the provider to use. Must be registered
   provider: ovh
   # domain to update

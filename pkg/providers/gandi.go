@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-gandi/go-gandi/config"
 	"github.com/go-gandi/go-gandi/livedns"
-	"gitlab.com/atomys-universe/dns-updater/pkg/manager"
+	"gitlab.com/atomys-universe/dns-updater/internal/pkg/dns"
 )
 
 type GandiProvider struct {
@@ -39,7 +39,7 @@ func (c GandiProvider) Name() string {
 	return "gandi"
 }
 
-func (c GandiProvider) UpdateDNS(domainName, subDomain string, fieldType manager.RecordType, ip net.IP) error {
+func (c GandiProvider) UpdateDNS(domainName, subDomain string, fieldType dns.RecordType, ip net.IP) error {
 	newRecord := livedns.DomainRecord{
 		RrsetType:   string(fieldType),
 		RrsetName:   subDomain,

@@ -9,13 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gitlab.com/atomys-universe/dns-updater/pkg/manager"
-	"gitlab.com/atomys-universe/dns-updater/pkg/providers"
 )
-
-type Content struct {
-	Content  string `json:"content"`
-	Username string `json:"username"`
-}
 
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
@@ -38,9 +32,6 @@ func init() {
 
 func main() {
 	log.Info().Msg("DNS Updater starting...")
-
-	manager.RegisterProvider(providers.NewOvhProvider())
-	manager.RegisterProvider(providers.NewGandiProvider())
 
 	if err := manager.ValidateConfiguration(); err != nil {
 		log.Fatal().Err(err).Msg("configuration is invalid")
