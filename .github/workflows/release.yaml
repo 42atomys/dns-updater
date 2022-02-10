@@ -2,7 +2,7 @@ name: Release 🎉
 on:
   release:
     types:
-      - published
+      - released
 jobs:
   gobin-releases-matrix:
     name: Release Go Binary
