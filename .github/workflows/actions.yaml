@@ -2,7 +2,7 @@ name: Tests 🛠️
 on: [push]
 jobs:
   applications-test-units:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout project
       uses: actions/checkout@v2
