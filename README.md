@@ -1,5 +1,12 @@
 # DNS-Updater
 
+[![Release 🎉](https://github.com/42Atomys/dns-updater/actions/workflows/release.yaml/badge.svg)](https://github.com/42Atomys/dns-updater/actions/workflows/release.yaml)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/42atomys/dns-updater?label=last%20release)
+![GitHub contributors](https://img.shields.io/github/contributors/42Atomys/dns-updater?color=blueviolet)
+![GitHub Repo stars](https://img.shields.io/github/stars/42atomys/dns-updater?color=blueviolet)
+[![Docker Pull](https://img.shields.io/docker/pulls/atomys/dns-updater)](https://hub.docker.com/r/atomys/dns-updater)
+[![Docker Pull](https://img.shields.io/docker/image-size/atomys/dns-updater)](https://hub.docker.com/r/atomys/dns-updater)
+
 Simple application in Golang that retrieves your ip and updates your DNS entries automatically each time your IP changes.
 
 ## Motivation
@@ -50,9 +57,7 @@ $ ./dns-updater
 
 # Contribution
 
-**This project is maintained on GitLab** : https://gitlab.com/Atomys/dns-updater
-
-MR must be on GitLab to be accepted. All pull requests on GitHub will rewrite on Gitlab if necessary.
+All pull requests and issues on GitHub will welcome.
 
 ## How to add provider 
 
