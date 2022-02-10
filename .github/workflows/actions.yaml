@@ -1,4 +1,4 @@
-name: Actions
+name: Tests 🛠️
 on: [push]
 jobs:
   applications-test-units:
