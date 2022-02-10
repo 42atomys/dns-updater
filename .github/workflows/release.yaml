@@ -51,5 +51,5 @@ jobs:
         file: build/Dockerfile
         push: true
         tags: |
-          atomys/dns-updater:${{ github.ref }}
+          atomys/dns-updater:${{ github.ref_name }}
           atomys/dns-updater:latest
