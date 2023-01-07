@@ -19,16 +19,18 @@ func FetchIPChangeRoutine(c chan IPChangeState, interval time.Duration) {
 
 		var oldIpv4 = CurrentIPv4
 		var fetchedIPv4 = fetchIPv4()
-		if !oldIpv4.Equal(fetchedIPv4) {
-			CurrentIPv4 = fetchedIPv4
+		if fetchedIPv4 != nil && !oldIpv4.Equal(*fetchedIPv4) {
+			CurrentIPv4 = *fetchedIPv4
 			state.IPV4Change = true
 		}
 
-		var oldIpv6 = CurrentIPv6
-		var fetchedIPv6 = fetchIPv6()
-		if !oldIpv6.Equal(fetchedIPv6) {
-			CurrentIPv6 = fetchedIPv6
-			state.IPV6Change = true
+		if ipv6Available() {
+			var oldIpv6 = CurrentIPv6
+			var fetchedIPv6 = fetchIPv6()
+			if fetchedIPv6 != nil && !oldIpv6.Equal(*fetchedIPv6) {
+				CurrentIPv6 = *fetchedIPv6
+				state.IPV6Change = true
+			}
 		}
 
 		c <- state
